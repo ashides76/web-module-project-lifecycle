@@ -10,8 +10,8 @@ export default class App extends React.Component {
     // completed: false
   }
   fetchToDos = () => {
-    axios.get(`${URL}`).then(res => {
-      this.setState({todos: res.data.data});
+    axios.get(URL).then(res => {
+      this.setState({...this.state, todos: res.data.data});
       console.log(this.state.todos);
     })
   }
@@ -25,8 +25,9 @@ export default class App extends React.Component {
         <div id='error'>Error: No error(s)</div>
         <div id='todos'>
           <h2>Todos:</h2>
-          <div>Walk the dog</div>
-          <div>Learn react</div>
+          {this.state.todos.map(todo => {
+            return <div key={todo.id}>{todo.name}</div>
+          })}
         </div>
         <form id='todoForm'>
           <input type='text' placeholder='Type todo' />
@@ -37,4 +38,3 @@ export default class App extends React.Component {
     )
   }
 }
-
