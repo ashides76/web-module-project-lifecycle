@@ -20,7 +20,7 @@ export default class App extends React.Component {
 
   postToDos = () => {
     axios.post(URL, {name: this.state.toDoName}).then(res => {
-      this.fetchToDos();
+      this.setState({...this.state, todos: this.state.todos.concat(res.data.data)})
       this.setState({...this.state, toDoName: ''})
     }).catch(err => {
       this.setState({...this.state, error: err.response.data.message})
@@ -43,9 +43,11 @@ export default class App extends React.Component {
   }
 
   toggleToDos = (id) => () => {
-    axios.patch(`${URL}/${id}`).then(res => {
+    axios.patch(`${URL}/${id}`)
+    .then(res => {
+      this.fetchToDos();
       this.setState({...this.state, todos: this.state.todos.map(td => {
-        if (td.id !== id) return td
+        if (id !== td.id) return td
         return res.data.data
       })})
     })
