@@ -21,10 +21,16 @@ export default class App extends React.Component {
   postToDos = () => {
     axios.post(URL, {name: this.state.toDoName}).then(res => {
       this.fetchToDos();
-      this.setState({...this.state, toDoName: ''})
+      this.setState({...this.state, toDoName: res.data.data})
     }).catch(err => {
       this.setState({...this.state, error: err.response.data.message})
     })
+  }
+
+  inputChange = (e) => {
+    this.preventDefault();
+    const {value} = e.target
+    this.setState({...this.state, toDoName: value })
   }
 
   onSubmit = (e) => {
@@ -36,7 +42,16 @@ export default class App extends React.Component {
     console.log('component did mount')
     this.fetchToDos();
   }
-  
+
+  toggleToDos = (id) => () => {
+    axios.patch(`${URL}/${id}`).then(res => {
+      this.setState({...this.state, todos: this.state.todos.map(td => {
+        if (td.id !== id) return td
+        return res.data.data
+      })})
+    })
+  }
+
   render() {
     return (
       <div>
@@ -44,11 +59,11 @@ export default class App extends React.Component {
         <div id='todos'>
           <h2>Todos:</h2>
           {this.state.todos.map(todo => {
-            return <div key={todo.id}>{todo.name}</div>
+            return <div onClick={this.toggleToDos(todo.id)} key={todo.id}>{todo.name}{todo.completed ? ' ✔' : ''}</div>
           })}
         </div>
         <form id='todoForm' onSubmit={this.onSubmit}>
-          <input type='text' placeholder='Type todo' value={this.state.toDoName} onChange={(e) => (this.setState({...this.state, toDoName: e.target.value}))}/>
+          <input type='text' placeholder='Type todo' value={this.state.toDoName} onChange={this.inputChangeChange}/>
           <input type='submit'/>
           <button>Clear Complete</button>
         </form>
