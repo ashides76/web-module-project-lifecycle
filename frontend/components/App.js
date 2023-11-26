@@ -7,7 +7,8 @@ export default class App extends React.Component {
   state = {
     todos: [],
     error: '',
-    toDoName: ''
+    toDoName: '',
+    displayCompleted: true
   }
   
   fetchToDos = () => {
@@ -53,20 +54,29 @@ export default class App extends React.Component {
     })
   }
 
+  toggleCompleted = () => {
+    this.setState({...this.state, displayCompleted: !this.state.displayCompleted})
+  }
+
   render() {
     return (
       <div>
         <div id='error'>Error: {this.state.error}</div>
-        <div id='todos'>
+        <div id="todos">
           <h2>Todos:</h2>
-          {this.state.todos.map(todo => {
-            return <div onClick={this.toggleToDos(todo.id)} key={todo.id}>{todo.name}{todo.completed ? ' ✔' : ''}</div>
-          })}
+          {this.state.todos
+            .filter(todo => (this.state.displayCompleted ? true : !todo.completed))
+            .map(todo => (
+              <div onClick={this.toggleToDos(todo.id)} key={todo.id}>
+                {todo.name}
+                {todo.completed ? ' ✔' : ''}
+              </div>
+            ))}
         </div>
         <form id='todoForm' onSubmit={this.onSubmit}>
           <input type='text' placeholder='Type todo' value={this.state.toDoName} onChange={this.inputChange}/>
           <input type='submit'/>
-          <button>Clear Complete</button>
+          <button onClick={this.toggleCompleted}>{this.state.displayCompleted ? 'Hide' : 'Show'} Complete</button>
         </form>
       </div>
     )
